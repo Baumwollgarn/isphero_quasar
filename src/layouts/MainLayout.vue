@@ -66,7 +66,7 @@ const linksList = [
     title: 'Newsletter',
     caption: 'People who want to receive emails',
     icon: 'email',
-    link: '/newsletter'
+    link: '#/newsletter'
   }
 ]
 
