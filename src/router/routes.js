@@ -8,6 +8,7 @@ const routes = [
       { path: 'users', component: () => import('pages/UserPage.vue') },
       { path: 'dashboard', component: () => import('pages/DashboardPage.vue') },
       { path: 'newsletter', component: () => import('pages/NewsletterPage.vue') },
+      { path: 'edit-user/:id', component: () => import('pages/EditUserPage.vue') },
     ]
   },
 

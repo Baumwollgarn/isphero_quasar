@@ -41,29 +41,54 @@
       <q-td>{{ user.email }}</q-td>
       <q-td>{{ user.role }}</q-td>
       <q-td>
-        <q-btn color="primary" icon="edit" />
-        <q-btn color="negative" icon="delete" />
+        <q-btn color="primary" icon="edit" @click="editUser(user.id)" />
+        <q-btn color="negative" icon="delete" @click="confirm = true; setDeleteId(user.id)" />
       </q-td>
     </q-tr>
   </q-markup-table>
+  <q-dialog v-model="confirm" persistent>
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="delete" color="primary" text-color="white" />
+        <span class="q-ml-sm">Are you sure you want to delete this user?</span>
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="primary" v-close-popup />
+        <q-btn flat label="Delete" color="red" v-close-popup @click="deleteUser"/>
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
   </div>
 </template>
 
 <script>
+import {ref} from "vue";
+import {useQuasar} from "quasar";
+
 export default {
   name: "UserPage",
   data() {
     return {
+      alert: ref(false),
+      confirm: ref(false),
+      prompt: ref(false),
       search: "",
       users: [],
       usersFiltered: [],
+      deleteId: null,
+      responseMessage: null,
+      colorMessage: null,
     };
   },
   methods: {
+    setDeleteId(id) {
+      this.deleteId = id;
+    },
     async getUsers() {
-      const response = await fetch("http://localhost:8000/users", {
+      const response = await fetch("http://isphero.com:1234/users", {
         method: "GET",
-      });
+      })
       let userMap = await response.json();
       this.users = userMap.map((user) => {
         return {
@@ -87,6 +112,51 @@ export default {
         );
       });
     },
+    deleteUser() {
+      fetch(`http://isphero.com:1234/user/${this.deleteId}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.status === 200) {
+            this.responseMessage = "User deleted successfully";
+            this.colorMessage = "positive";
+            this.showNotificationDelete()
+            this.getUsers();
+          }
+          if (response.status === 400) {
+            response.json().then((data) => {
+              this.responseMessage = data.message;
+              this.colorMessage = "negative";
+              this.showNotificationDelete()
+            });
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+    },
+    editUser(id) {
+      this.$router.push(`/edit-user/${id}`)
+    },
+  },
+  setup() {
+    const  q  = useQuasar();
+    return {
+      showNotificationDelete() {
+        q.notify({
+          message: this.responseMessage,
+          color: this.colorMessage,
+          position: "bottom",
+          timeout: 10000,
+          icon: 'person',
+          actions: [{ icon: "close", color: "white", label: "Close", handler: () => {
+              console.log("Close notification");
+            }
+          }],
+        });
+      },
+    }
   },
   async mounted() {
     this.users = this.getUsers();

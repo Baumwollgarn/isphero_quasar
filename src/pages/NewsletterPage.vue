@@ -13,7 +13,7 @@
                 rounded
                 dense
                 placeholder="Search"
-                color="blue-5"
+                color="white"
                 inverted
                 class="text-white"
               />
@@ -21,8 +21,9 @@
             <div class="col-auto">
               <q-btn
                 icon="delete"
+                color="red"
                 inverted
-                @click="deleteSelected"
+                @click="confirm = true"
               />
             </div>
           </div>
@@ -43,14 +44,33 @@
       </tr>
       </tbody>
     </q-markup-table>
+    <q-dialog v-model="confirm" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <q-avatar icon="delete" color="primary" text-color="white" />
+          <span class="q-ml-sm">Are you sure you want to delete those emails?</span>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+          <q-btn flat label="Delete" color="red" v-close-popup @click="deleteSelected"/>
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script>
+import {ref} from "vue";
+import { useQuasar } from "quasar";
+
 export default {
   name: "NewsletterPage",
   data() {
     return {
+      alert: ref(false),
+      confirm: ref(false),
+      prompt: ref(false),
       search: "",
       rows: [],
       loading: false,
@@ -65,10 +85,29 @@ export default {
       ],
     };
   },
+  setup() {
+    const  q  = useQuasar();
+    return {
+      q,
+      showNotificationDelete() {
+        q.notify({
+          message: "Emails deleted",
+          color: "positive",
+          position: "bottom",
+          timeout: 10000,
+          icon: 'announcement',
+          actions: [{ icon: "close", color: "white", label: "Close", handler: () => {
+              console.log("Close notification");
+            }
+          }],
+        });
+      }
+    };
+  },
   methods: {
     async load() {
       this.loading = true;
-      const response = await fetch("http://localhost:8000/newsletter", {
+      const response = await fetch("http://isphero.com:1234/newsletter", {
         method: "GET",
       });
       let newsletterMap = await response.json();
@@ -76,6 +115,7 @@ export default {
         return {
           id: newsletter.id,
           email: newsletter.email,
+          selected: false,
         };
       });
       this.loading = false;
@@ -92,12 +132,13 @@ export default {
     },
     async deleteEmails(emailsToDelete) {
       for (let i = 0; i < emailsToDelete.length; i++) {
-        await fetch("http://localhost:8000/newsletter/" + emailsToDelete[i], {
+        await fetch("http://isphero.com:1234/newsletter/" + emailsToDelete[i], {
           method: "DELETE",
         })
           .then((response) => {
             if (response.status === 200) {
               console.log("Email deleted");
+              this.showNotificationDelete();
             }
           })
           .catch((error) => {
