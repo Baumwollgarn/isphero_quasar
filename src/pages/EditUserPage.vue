@@ -137,7 +137,7 @@ export default {
   methods: {
     async getUser() {
       let id = this.$route.params.id;
-      const response = await fetch(`http://isphero.com:1234/user/${id}`, {
+      const response = await fetch(`${process.env.API}/user/${id}`, {
         method: "GET",
       })
       let user = await response.json();
@@ -156,7 +156,7 @@ export default {
 
     async saveUser() {
       let id = this.$route.params.id;
-      await fetch(`http://isphero.com:1234/user/${id}`, {
+      await fetch(`${process.env.API}/user/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

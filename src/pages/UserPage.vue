@@ -33,7 +33,7 @@
       <q-th>Role</q-th>
       <q-th>Actions</q-th>
     </q-tr>
-    <q-tr v-for="user in users" :key="user.id" class="text-center">
+    <q-tr v-for="user in usersFiltered" :key="user.id" class="text-center">
       <q-td>{{ user.id }}</q-td>
       <q-td>{{ user.first_name }}</q-td>
       <q-td>{{ user.last_name1 }}</q-td>
@@ -86,7 +86,7 @@ export default {
       this.deleteId = id;
     },
     async getUsers() {
-      const response = await fetch("http://isphero.com:1234/users", {
+      const response = await fetch(process.env.API + "/users", {
         method: "GET",
       })
       let userMap = await response.json();
@@ -100,6 +100,7 @@ export default {
           role: user.role,
         };
       });
+      return this.users;
     },
     filterUsers() {
       this.usersFiltered = this.users.filter((user) => {
@@ -113,7 +114,7 @@ export default {
       });
     },
     deleteUser() {
-      fetch(`http://isphero.com:1234/user/${this.deleteId}`, {
+      fetch(`${process.env.API}/user/${this.deleteId}`, {
         method: "DELETE",
       })
         .then((response) => {
@@ -159,11 +160,10 @@ export default {
     }
   },
   async mounted() {
-    this.users = this.getUsers();
+    this.usersFiltered = await this.getUsers();
   },
 }
 </script>
 
 <style scoped>
-
 </style>

@@ -107,7 +107,7 @@ export default {
   methods: {
     async load() {
       this.loading = true;
-      const response = await fetch("http://isphero.com:1234/newsletter", {
+      const response = await fetch(process.env.API + "/newsletter", {
         method: "GET",
       });
       let newsletterMap = await response.json();
@@ -132,7 +132,7 @@ export default {
     },
     async deleteEmails(emailsToDelete) {
       for (let i = 0; i < emailsToDelete.length; i++) {
-        await fetch("http://isphero.com:1234/newsletter/" + emailsToDelete[i], {
+        await fetch(process.env.API + "/newsletter/" + emailsToDelete[i], {
           method: "DELETE",
         })
           .then((response) => {

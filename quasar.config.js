@@ -49,6 +49,15 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
+      env: {
+        API: ctx.dev
+          ? 'http://localhost:8000'
+          : 'http://isphero.com:1234',
+      },
+
+      /*env: require("dotenv").config({
+        path: (process.env.ENVIRONMENT) ? `.env.${process.env.ENVIRONMENT}` : ".env.developer"
+      }).parsed,*/
 
       // transpile: false,
       // publicPath: '/',
