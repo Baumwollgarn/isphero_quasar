@@ -50,6 +50,7 @@
       <q-td>
         <q-btn color="primary" icon="edit" @click="editUser(user.id)" />
         <q-btn color="negative" icon="delete" @click="confirm = true; setDeleteId(user.id)" />
+        <q-btn color="black" icon="vpn_key" @click="showServices(user.id)" />
       </q-td>
     </q-tr>
   </q-markup-table>

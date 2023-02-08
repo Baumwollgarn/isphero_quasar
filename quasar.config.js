@@ -53,6 +53,9 @@ module.exports = configure(function (ctx) {
         API: ctx.dev
           ? 'http://localhost:8000'
           : 'http://isphero.com:1234',
+        LOGIN: ctx.dev
+          ? 'http://localhost:8080'
+          : 'https://isphero.com/',
       },
 
       /*env: require("dotenv").config({
@@ -88,7 +91,7 @@ module.exports = configure(function (ctx) {
       server: {
         type: 'http'
       },
-      port: 8080,
+      port: 8081,
       open: true // opens browser window automatically
     },
 
