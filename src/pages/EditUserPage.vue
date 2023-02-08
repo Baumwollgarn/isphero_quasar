@@ -137,6 +137,9 @@ export default {
   methods: {
     async getUser() {
       let id = this.$route.params.id;
+      if (id === "new") {
+        return;
+      }
       const response = await fetch(`${process.env.API}/user/${id}`, {
         method: "GET",
       })
@@ -156,28 +159,52 @@ export default {
 
     async saveUser() {
       let id = this.$route.params.id;
-      await fetch(`${process.env.API}/user/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: this.email,
-          role: this.role,
-          userData: {
-            user_id: this.user_data.user_id,
-            first_name: this.user_data.first_name,
-            last_name1: this.user_data.last_name1,
-            address: this.user_data.address,
-            city: this.user_data.city,
-            country: this.user_data.country,
-            postal_code: this.user_data.postal_code,
-          }
+      if (id !== "new") {
+        await fetch(`${process.env.API}/user/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: this.email,
+            role: this.role,
+            userData: {
+              user_id: this.user_data.user_id,
+              first_name: this.user_data.first_name,
+              last_name1: this.user_data.last_name1,
+              address: this.user_data.address,
+              city: this.user_data.city,
+              country: this.user_data.country,
+              postal_code: this.user_data.postal_code,
+            }
+          })
         })
-      })
-      this.$router.push("/users");
-    },
-
+        this.$router.push("/users");
+      }
+      if (id === "new") {
+        await fetch(`${process.env.API}/user`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: this.email,
+            role: this.role,
+            username: this.username,
+            userData: {
+              user_id: this.user_data.user_id,
+              first_name: this.user_data.first_name,
+              last_name1: this.user_data.last_name1,
+              address: this.user_data.address,
+              city: this.user_data.city,
+              country: this.user_data.country,
+              postal_code: this.user_data.postal_code,
+            }
+          })
+        })
+        this.$router.push("/users");
+      }
+    }
   },
   mounted() {
     this.getUser();

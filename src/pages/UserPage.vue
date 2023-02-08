@@ -19,6 +19,13 @@
               <template v-slot:before>
                 <q-icon name="person" />
               </template>
+              <template v-slot:after>
+                <q-btn
+                  icon="add"
+                  color="green"
+                  @click="editUser('new')"
+                />
+              </template>
             </q-input>
           </div>
         </div>
@@ -117,12 +124,12 @@ export default {
       fetch(`${process.env.API}/user/${this.deleteId}`, {
         method: "DELETE",
       })
-        .then((response) => {
+        .then(async (response) => {
           if (response.status === 200) {
             this.responseMessage = "User deleted successfully";
             this.colorMessage = "positive";
             this.showNotificationDelete()
-            this.getUsers();
+            this.usersFiltered = await this.getUsers();
           }
           if (response.status === 400) {
             response.json().then((data) => {
