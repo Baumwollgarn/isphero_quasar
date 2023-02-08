@@ -21,7 +21,7 @@
                 </template>
               </q-input>
               <q-input
-                v-model="firstName"
+                v-model="user_data.first_name"
                 label="Name"
                 filled
                 value= firstName
@@ -32,7 +32,7 @@
                 </template>
               </q-input>
               <q-input
-                v-model="lastName"
+                v-model="user_data.last_name1"
                 label="Last Name"
                 value= lastName
                 filled
@@ -56,7 +56,7 @@
             </div>
             <div class=" col-12 col-md-5">
               <q-input
-                v-model="address"
+                v-model="user_data.address"
                 label="Address"
                 value= address
                 filled
@@ -67,7 +67,7 @@
                 </template>
               </q-input>
               <q-input
-                v-model="city"
+                v-model="user_data.city"
                 label="City"
                 value= city
                 filled
@@ -78,7 +78,7 @@
                 </template>
               </q-input>
               <q-input
-                v-model="postCode"
+                v-model="user_data.postal_code"
                 label="Post Code"
                 value= postCode
                 filled
@@ -120,16 +120,18 @@ export default {
   data() {
     return {
       id: this.$route.params.id,
-      firstName: "",
-      lastName: "",
       email: "",
-      verified: false,
-      address: "",
-      city: "",
-      country: "",
-      postCode: "",
       username: "",
       role: "",
+      user_data: {
+        user_id: "",
+        first_name: "",
+        last_name1: "",
+        address: "",
+        city: "",
+        country: "",
+        postal_code: "",
+      }
     }
   },
   methods: {
@@ -139,26 +141,40 @@ export default {
         method: "GET",
       })
       let user = await response.json();
-      this.firstName = user.user_data ? user.user_data.first_name : "";
-      this.lastName = user.user_data ? user.user_data.last_name : "";
+      this.user_data.user_id = id
+      this.user_data.first_name = user.user_data ? user.user_data.first_name : "";
+      this.user_data.last_name1 = user.user_data ? user.user_data.last_name1 : "";
       this.email = user.email;
       this.verified = user.verified;
-      this.address = user.user_data ? user.user_data.address : "";
-      this.city = user.user_data ? user.user_data.city : "";
-      this.country = user.user_data ? user.user_data.country : "";
+      this.user_data.address = user.user_data ? user.user_data.address : "";
+      this.user_data.city = user.user_data ? user.user_data.city : "";
+      this.user_data.country = user.user_data ? user.user_data.country : "";
+      this.user_data.postal_code = user.user_data ? user.user_data.postal_code : "";
       this.username = user.username;
       this.role = user.role;
     },
 
     async saveUser() {
       let id = this.$route.params.id;
-      const response = await fetch(`http://isphero.com:1234/user/${id}`, {
+      await fetch(`http://isphero.com:1234/user/${id}`, {
         method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           email: this.email,
-        }),
+          role: this.role,
+          userData: {
+            user_id: this.user_data.user_id,
+            first_name: this.user_data.first_name,
+            last_name1: this.user_data.last_name1,
+            address: this.user_data.address,
+            city: this.user_data.city,
+            country: this.user_data.country,
+            postal_code: this.user_data.postal_code,
+          }
+        })
       })
-      let user = await response.json();
       this.$router.push("/users");
     },
 

@@ -115,7 +115,7 @@ export default {
         return {
           id: newsletter.id,
           email: newsletter.email,
-          selected: false,
+          selected: false
         };
       });
       this.loading = false;
