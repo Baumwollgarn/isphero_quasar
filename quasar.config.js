@@ -55,7 +55,7 @@ module.exports = configure(function (ctx) {
           : 'http://isphero.com:1234',
         LOGIN: ctx.dev
           ? 'http://localhost:8080'
-          : 'https://isphero.com/',
+          : 'https://isphero.com',
       },
 
       /*env: require("dotenv").config({

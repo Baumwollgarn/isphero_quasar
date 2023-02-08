@@ -62,7 +62,7 @@ export default defineComponent({
       })
         .then(res => res.text())
         .then(res => {
-          if (res === 'Logged in') {
+          if (res.includes('admin')) {
             this.$q.notify({
               message: 'Login successful',
               color: 'positive',
@@ -72,9 +72,16 @@ export default defineComponent({
             localStorage.setItem('token', this.username)
             console.log(localStorage.getItem('token'))
             this.$router.push('/home')
+          } else if (res.includes('user')) {
+            this.$q.notify({
+              message: res,
+              color: 'negative',
+              position: 'bottom',
+              timeout: 3500
+            })
           } else {
             this.$q.notify({
-              message: 'Invalid username or password',
+              message: res,
               color: 'negative',
               position: 'bottom',
               timeout: 3500

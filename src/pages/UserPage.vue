@@ -146,7 +146,7 @@ export default {
 
     },
     editUser(id) {
-      this.$router.push(`/edit-user/${id}`)
+      this.$router.push(`/home/edit-user/${id}`)
     },
   },
   setup() {

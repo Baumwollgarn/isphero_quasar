@@ -104,7 +104,6 @@
           <q-btn
             label="Save"
             color="primary"
-            type="submit"
             @click="saveUser"
             class="self-center"
           />
@@ -179,7 +178,7 @@ export default {
             }
           })
         })
-        this.$router.push("/users");
+        this.$router.push("/home/users");
       }
       if (id === "new") {
         await fetch(`${process.env.API}/user`, {
@@ -202,7 +201,7 @@ export default {
             }
           })
         })
-        this.$router.push("/users");
+        this.$router.push("/home/users");
       }
     }
   },
