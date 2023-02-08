@@ -26,7 +26,6 @@
               <q-btn
                 label="Login"
                 color="primary"
-                type="submit"
                 @click="login"
               />
             </q-form>
@@ -71,6 +70,7 @@ export default defineComponent({
               timeout: 3500
             })
             localStorage.setItem('token', this.username)
+            console.log(localStorage.getItem('token'))
             this.$router.push('/home')
           } else {
             this.$q.notify({

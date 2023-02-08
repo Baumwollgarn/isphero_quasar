@@ -15,7 +15,14 @@
           ISP Hero - Admin Panel
         </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <q-btn
+          flat
+          dense
+          round
+          icon="logout"
+          aria-label="Logout"
+          @click="logout"
+        />
       </q-toolbar>
     </q-header>
 
@@ -54,19 +61,19 @@ const linksList = [
     title: 'Dashboard',
     caption: 'Overview of environment',
     icon: 'dashboard',
-    link: '#/dashboard'
+    link: '#/home/dashboard'
   },
   {
     title: 'Users',
     caption: 'Manage users',
     icon: 'people',
-    link: '#/users'
+    link: '#/home/users'
   },
   {
     title: 'Newsletter',
     caption: 'People who want to receive emails',
     icon: 'email',
-    link: '#/newsletter'
+    link: '#/home/newsletter'
   }
 ]
 
@@ -75,6 +82,17 @@ export default defineComponent({
 
   components: {
     EssentialLink
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem('token')
+      this.$router.push('/')
+    }
+  },
+  mounted() {
+    if (!localStorage.getItem('token')) {
+      this.$router.push('/')
+    }
   },
 
   setup () {
