@@ -1,8 +1,8 @@
 <template>
-  <q-layout class="hHh lpR fFf">
+  <q-layout class="hHh lpR fFf bg-grey-2">
     <q-page-container>
       <q-page class="flex flex-center">
-        <q-card class="bg-grey-2 q-pa-md">
+        <q-card class="bg-blue-1 q-pa-md">
           <q-card-section>
             <div class="text-h5">Login</div>
           </q-card-section>
@@ -38,7 +38,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import {QSpinnerFacebook} from "quasar";
+import {QSpinnerFacebook} from "quasar"
 
 export default defineComponent({
   name: 'App',
@@ -47,6 +47,7 @@ export default defineComponent({
     return {
       username: '',
       password: '',
+      email: '',
     }
   },
   methods: {
@@ -102,6 +103,45 @@ export default defineComponent({
             })
           }
         })
+    }
+  },
+  mounted() {
+    if (localStorage.getItem('token') !== null) {
+      this.$router.push('/home')
+    }
+    let recaptchaScript = document.createElement('script')
+    recaptchaScript.setAttribute('src', 'https://accounts.google.com/gsi/client')
+    recaptchaScript.setAttribute('async', '')
+    recaptchaScript.setAttribute('defer', '')
+    document.head.appendChild(recaptchaScript)
+    if (localStorage.getItem('token') === null) {
+      recaptchaScript.onload = () => {
+        google.accounts.id.initialize({
+          client_id: '578391080478-tld06kdi3jv6guggqbuj5vrua8cq15vh.apps.googleusercontent.com',
+          callback: async (responseGoogle) => {
+
+            console.log(responseGoogle);
+
+            const tokenGoogle = responseGoogle.credential;
+
+            const responseFetch = await fetch('http://localhost:8080/auth/google', {
+              method: 'POST',
+              body: tokenGoogle,
+            })
+            const token = await responseFetch.text();
+            console.log(token);
+            localStorage.setItem('token',`${token}`)
+            this.$q.notify({
+              message: 'Login successful',
+              color: 'positive',
+              position: 'bottom',
+              timeout: 3500
+            })
+            this.$router.push('/home')
+          }
+        });
+        google.accounts.id.prompt();
+      }
     }
   }
 })
