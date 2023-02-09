@@ -53,7 +53,7 @@ export default defineComponent({
     showLoading(){
       this.$q.loading.show({
         message: 'Logging in...',
-        spinnerSize: 100,
+        spinnerSize: 150,
         spinner: QSpinnerFacebook,
         backgroundColor: 'blue-7',
         spinnerColor: 'orange-7',

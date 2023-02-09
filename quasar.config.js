@@ -98,7 +98,8 @@ module.exports = configure(function (ctx) {
     // https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-framework
     framework: {
       config: {
-        notify: { /* look at QuasarConfOptions from the API card */ }
+        notify: { /* look at QuasarConfOptions from the API card */ },
+        dark: 'false', // or Boolean true/false
       },
 
       // iconSet: 'material-icons', // Quasar icon set
