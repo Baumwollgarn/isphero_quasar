@@ -74,7 +74,10 @@ export default defineComponent({
       })
         .then(res => res.text())
         .then(res => {
-          if (res.includes('admin')) {
+          console.log(res)
+          res = res.split(' ')
+          if (res[0] === 'admin') {
+            localStorage.setItem('token', res[1])
             this.$q.loading.hide()
             this.$q.notify({
               message: 'Login successful',
@@ -82,13 +85,11 @@ export default defineComponent({
               position: 'bottom',
               timeout: 3500
             })
-            localStorage.setItem('token', this.username)
-            console.log(localStorage.getItem('token'))
             this.$router.push('/home')
-          } else if (res.includes('user')) {
+          } else if (res[0] === 'user') {
             this.$q.loading.hide()
             this.$q.notify({
-              message: res,
+              message: res[0],
               color: 'negative',
               position: 'bottom',
               timeout: 3500
@@ -96,7 +97,7 @@ export default defineComponent({
           } else {
             this.$q.loading.hide()
             this.$q.notify({
-              message: res,
+              message: res[0],
               color: 'negative',
               position: 'bottom',
               timeout: 3500
