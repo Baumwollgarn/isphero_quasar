@@ -126,7 +126,7 @@ export default defineComponent({
 
             const tokenGoogle = responseGoogle.credential;
 
-            const responseFetch = await fetch('http://localhost:8080/auth/google', {
+            const responseFetch = await fetch(process.env.LOGIN + '/auth/google', {
               method: 'POST',
               body: tokenGoogle,
             })
