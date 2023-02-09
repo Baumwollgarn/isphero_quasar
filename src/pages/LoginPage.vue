@@ -65,7 +65,8 @@ export default defineComponent({
       fetch(process.env.LOGIN + '/api/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Referer-Policy': 'no-referrer-when-downgrade'
         },
         body: JSON.stringify({
           username: this.username,
@@ -89,7 +90,7 @@ export default defineComponent({
           } else if (res[0] === 'user') {
             this.$q.loading.hide()
             this.$q.notify({
-              message: res[0],
+              message: res.join(' '),
               color: 'negative',
               position: 'bottom',
               timeout: 3500
@@ -97,7 +98,7 @@ export default defineComponent({
           } else {
             this.$q.loading.hide()
             this.$q.notify({
-              message: res[0],
+              message: res.join(' '),
               color: 'negative',
               position: 'bottom',
               timeout: 3500
