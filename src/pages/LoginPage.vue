@@ -38,6 +38,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import {QSpinnerFacebook} from "quasar";
 
 export default defineComponent({
   name: 'App',
@@ -49,7 +50,17 @@ export default defineComponent({
     }
   },
   methods: {
+    showLoading(){
+      this.$q.loading.show({
+        message: 'Logging in...',
+        spinnerSize: 100,
+        spinner: QSpinnerFacebook,
+        backgroundColor: 'blue-7',
+        spinnerColor: 'orange-7',
+      })
+    },
     login() {
+      this.showLoading()
       fetch(process.env.LOGIN + '/api/login', {
         method: 'POST',
         headers: {
@@ -63,6 +74,7 @@ export default defineComponent({
         .then(res => res.text())
         .then(res => {
           if (res.includes('admin')) {
+            this.$q.loading.hide()
             this.$q.notify({
               message: 'Login successful',
               color: 'positive',
@@ -73,6 +85,7 @@ export default defineComponent({
             console.log(localStorage.getItem('token'))
             this.$router.push('/home')
           } else if (res.includes('user')) {
+            this.$q.loading.hide()
             this.$q.notify({
               message: res,
               color: 'negative',
@@ -80,6 +93,7 @@ export default defineComponent({
               timeout: 3500
             })
           } else {
+            this.$q.loading.hide()
             this.$q.notify({
               message: res,
               color: 'negative',
