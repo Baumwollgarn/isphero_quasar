@@ -129,7 +129,24 @@ export default defineComponent({
               body: tokenGoogle,
             })
             const token = await responseFetch.text();
-            console.log(token);
+            if (token === 'Wrong credentials') {
+              this.$q.notify({
+                message: 'Wrong credentials',
+                color: 'negative',
+                position: 'bottom',
+                timeout: 3500
+              })
+              return
+            }
+            if (token === 'Unauthorized') {
+              this.$q.notify({
+                message: 'Unauthorized for this action',
+                color: 'negative',
+                position: 'bottom',
+                timeout: 3500
+              })
+              return
+            }
             localStorage.setItem('token',`${token}`)
             this.$q.notify({
               message: 'Login successful',

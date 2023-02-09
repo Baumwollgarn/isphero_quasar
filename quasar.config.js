@@ -54,7 +54,7 @@ module.exports = configure(function (ctx) {
           ? 'http://isphero.com:1234'
           : 'http://isphero.com:1234',
         LOGIN: ctx.dev
-          ? 'https://isphero.com'
+          ? 'http://localhost:8080'
           : 'https://isphero.com',
       },
 
