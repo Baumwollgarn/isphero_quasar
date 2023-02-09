@@ -51,10 +51,10 @@ module.exports = configure(function (ctx) {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: {
         API: ctx.dev
-          ? 'http://isphero.com:1234'
-          : 'http://isphero.com:1234',
+          ? 'https://isphero.com:1234'
+          : 'https://isphero.com:1234',
         LOGIN: ctx.dev
-          ? 'https://isphero.com'
+          ? 'http://localhost:8080'
           : 'https://isphero.com',
       },
 

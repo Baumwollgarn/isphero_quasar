@@ -1,8 +1,8 @@
 <template>
-  <q-layout class="hHh lpR fFf">
+  <q-layout class="hHh lpR fFf bg-grey-2">
     <q-page-container>
       <q-page class="flex flex-center">
-        <q-card class="bg-grey-2 q-pa-md">
+        <q-card class="bg-blue-1 q-pa-md">
           <q-card-section>
             <div class="text-h5">Login</div>
           </q-card-section>
@@ -38,7 +38,7 @@
 
 <script>
 import { defineComponent } from 'vue'
-import {QSpinnerFacebook} from "quasar";
+import {QSpinnerFacebook} from "quasar"
 
 export default defineComponent({
   name: 'App',
@@ -47,6 +47,7 @@ export default defineComponent({
     return {
       username: '',
       password: '',
+      email: '',
     }
   },
   methods: {
@@ -64,7 +65,8 @@ export default defineComponent({
       fetch(process.env.LOGIN + '/api/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Referer-Policy': 'no-referrer-when-downgrade'
         },
         body: JSON.stringify({
           username: this.username,
@@ -73,7 +75,10 @@ export default defineComponent({
       })
         .then(res => res.text())
         .then(res => {
-          if (res.includes('admin')) {
+          console.log(res)
+          res = res.split(' ')
+          if (res[0] === 'admin') {
+            localStorage.setItem('token', res[1])
             this.$q.loading.hide()
             this.$q.notify({
               message: 'Login successful',
@@ -81,13 +86,11 @@ export default defineComponent({
               position: 'bottom',
               timeout: 3500
             })
-            localStorage.setItem('token', this.username)
-            console.log(localStorage.getItem('token'))
             this.$router.push('/home')
-          } else if (res.includes('user')) {
+          } else if (res[0] === 'user') {
             this.$q.loading.hide()
             this.$q.notify({
-              message: res,
+              message: res.join(' '),
               color: 'negative',
               position: 'bottom',
               timeout: 3500
@@ -95,13 +98,69 @@ export default defineComponent({
           } else {
             this.$q.loading.hide()
             this.$q.notify({
-              message: res,
+              message: res.join(' '),
               color: 'negative',
               position: 'bottom',
               timeout: 3500
             })
           }
         })
+    }
+  },
+  mounted() {
+    if (localStorage.getItem('token') !== null) {
+      this.$router.push('/home')
+    }
+    let recaptchaScript = document.createElement('script')
+    recaptchaScript.setAttribute('src', 'https://accounts.google.com/gsi/client')
+    recaptchaScript.setAttribute('async', '')
+    recaptchaScript.setAttribute('defer', '')
+    document.head.appendChild(recaptchaScript)
+    if (localStorage.getItem('token') === null) {
+      recaptchaScript.onload = () => {
+        google.accounts.id.initialize({
+          client_id: '578391080478-tld06kdi3jv6guggqbuj5vrua8cq15vh.apps.googleusercontent.com',
+          callback: async (responseGoogle) => {
+
+            console.log(responseGoogle);
+
+            const tokenGoogle = responseGoogle.credential;
+
+            const responseFetch = await fetch('http://localhost:8080/auth/google', {
+              method: 'POST',
+              body: tokenGoogle,
+            })
+            const token = await responseFetch.text();
+            if (token === 'Wrong credentials') {
+              this.$q.notify({
+                message: 'Wrong credentials',
+                color: 'negative',
+                position: 'bottom',
+                timeout: 3500
+              })
+              return
+            }
+            if (token === 'Unauthorized') {
+              this.$q.notify({
+                message: 'Unauthorized for this action',
+                color: 'negative',
+                position: 'bottom',
+                timeout: 3500
+              })
+              return
+            }
+            localStorage.setItem('token',`${token}`)
+            this.$q.notify({
+              message: 'Login successful',
+              color: 'positive',
+              position: 'bottom',
+              timeout: 3500
+            })
+            this.$router.push('/home')
+          }
+        });
+        google.accounts.id.prompt();
+      }
     }
   }
 })

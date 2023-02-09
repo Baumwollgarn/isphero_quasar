@@ -89,8 +89,20 @@ export default defineComponent({
       this.$router.push('/')
     }
   },
-  mounted() {
-    if (!localStorage.getItem('token')) {
+  async mounted() {
+    let token = localStorage.getItem('token')
+    let verifyToken = await fetch(process.env.LOGIN + '/auth/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        token: token
+      })
+    })
+    let response = await verifyToken.text()
+    if (response.includes('false')) {
+      localStorage.removeItem('token')
       this.$router.push('/')
     }
   },
