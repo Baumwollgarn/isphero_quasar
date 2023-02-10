@@ -28,3 +28,6 @@ quasar build
 
 ### Customize the configuration
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js).
+
+
+[![Baumwollgarn/isphero_quasar - GitHub](https://gh-card.dev/repos/Baumwollgarn/isphero_quasar.svg?fullname=)](https://github.com/Baumwollgarn/isphero_quasar)
