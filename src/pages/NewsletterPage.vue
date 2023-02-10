@@ -1,8 +1,66 @@
 <template>
-  <!-- Markup table with E-mail addresses from an array. Be able to search and delete -->
+  <div class="q-pa-md">
+    <q-table
+      :rows="rowsFiltered"
+      :columns="columns"
+      row-key="id"
+      v-model:pagination="pagination"
+      :rows-per-page-options="[0]"
+      :loading="loading"
+      :search="search"
+      >
+      <template v-slot:top>
+        <q-toolbar>
+          <q-toolbar-title>Users</q-toolbar-title>
+          <q-space />
+          <q-input
+            v-model="search"
+            dense
+            rounded
+            debounce="500"
+            placeholder="Search"
+            @update:model-value="searchEmail"
+          >
+            <template v-slot:before>
+              <q-icon name="search" />
+            </template>
+            <template v-slot:after>
+              <q-btn
+                icon="delete"
+                color="red"
+                inverted
+                @click="confirm = true"
+              />
+            </template>
+          </q-input>
+        </q-toolbar>
+      </template>
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <q-td v-for="col in props.cols" :key="col.name" :props="props">
+            <q-item v-if="col.name === 'selected'">
+              <q-item-section avatar>
+                <q-checkbox
+                  v-model="props.row.selected"
+                  dense
+                  color="red"
+                />
+              </q-item-section>
+            </q-item>
+            <q-item v-else>
+              <q-item-section>
+                {{ col.value }}
+              </q-item-section>
+            </q-item>
+          </q-td>
+        </q-tr>
+      </template>
+    </q-table>
+  </div>
+<!--
   <div class="q-pa-md">
     <q-markup-table flat bordered>
-      <thead class="bg-blue-7">
+      <thead class="bg-blue-2">
       <tr>
         <th colspan="5">
           <div class="row no-wrap items-center">
@@ -44,7 +102,9 @@
       </tr>
       </tbody>
     </q-markup-table>
-    <q-dialog v-model="confirm" persistent>
+    -->
+
+  <q-dialog v-model="confirm" persistent>
       <q-card>
         <q-card-section class="row items-center">
           <q-avatar icon="delete" color="primary" text-color="white" />
@@ -57,12 +117,12 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-  </div>
 </template>
 
 <script>
 import {ref} from "vue";
 import { useQuasar } from "quasar";
+import axios from "axios";
 
 export default {
   name: "NewsletterPage",
@@ -72,17 +132,27 @@ export default {
       confirm: ref(false),
       prompt: ref(false),
       search: "",
+      rowsFiltered: [],
       rows: [],
       loading: false,
       columns: [
         {
           name: "email",
           label: "E-mail",
-          field: "email",
+          field: row => row.email,
           align: "left",
           sortable: true,
         },
+        {
+          name: "selected",
+          label: "Select",
+          field: row => row.selected,
+          align: "left",
+        },
       ],
+      pagination: ref({
+        rowsPerPage: 10,
+      })
     };
   },
   setup() {
@@ -91,11 +161,11 @@ export default {
       q,
       showNotificationDelete() {
         q.notify({
-          message: "Emails deleted",
+          message: "Email(s) deleted",
           color: "positive",
           position: "bottom",
           timeout: 10000,
-          icon: 'announcement',
+          icon: 'check_circle',
           actions: [{ icon: "close", color: "white", label: "Close", handler: () => {
               console.log("Close notification");
             }
@@ -107,10 +177,8 @@ export default {
   methods: {
     async load() {
       this.loading = true;
-      const response = await fetch(process.env.API + "/newsletter", {
-        method: "GET",
-      });
-      let newsletterMap = await response.json();
+      const response2 = await axios.get(process.env.API + "/newsletter");
+      let newsletterMap = await response2.data;
       this.rows = newsletterMap.map((newsletter) => {
         return {
           id: newsletter.id,
@@ -119,9 +187,15 @@ export default {
         };
       });
       this.loading = false;
+      return this.rows;
+    },
+    searchEmail() {
+      this.rowsFiltered = this.rows.filter((row) => {
+        return row.email.toLowerCase().includes(this.search.toLowerCase());
+      });
     },
     deleteSelected() {
-      var emailsToDelete = [];
+      const emailsToDelete = [];
       this.rows = this.rows.filter((row) => {
         if (row.selected) {
           emailsToDelete.push(row.id);
@@ -139,6 +213,7 @@ export default {
             if (response.status === 200) {
               console.log("Email deleted");
               this.showNotificationDelete();
+              this.rowsFiltered = this.rows;
             }
           })
           .catch((error) => {
@@ -147,8 +222,8 @@ export default {
       }
     },
   },
-  mounted() {
-    this.load();
+  async mounted() {
+    this.rowsFiltered = await this.load();
   }
 }
 </script>

@@ -121,12 +121,15 @@ export default defineComponent({
         google.accounts.id.initialize({
           client_id: '578391080478-tld06kdi3jv6guggqbuj5vrua8cq15vh.apps.googleusercontent.com',
           callback: async (responseGoogle) => {
-
-            console.log(responseGoogle);
-
             const tokenGoogle = responseGoogle.credential;
-
-            const responseFetch = await fetch('http://localhost:8080/auth/google', {
+            this.$q.loading.show({
+              message: 'Logging in...',
+              spinnerSize: 150,
+              spinner: QSpinnerFacebook,
+              backgroundColor: 'blue-7',
+              spinnerColor: 'orange-7',
+            })
+            const responseFetch = await fetch(process.env.LOGIN + '/auth/google', {
               method: 'POST',
               body: tokenGoogle,
             })
@@ -138,6 +141,7 @@ export default defineComponent({
                 position: 'bottom',
                 timeout: 3500
               })
+              this.$q.loading.hide()
               return
             }
             if (token === 'Unauthorized') {
@@ -147,6 +151,7 @@ export default defineComponent({
                 position: 'bottom',
                 timeout: 3500
               })
+              this.$q.loading.hide()
               return
             }
             localStorage.setItem('token',`${token}`)
@@ -156,6 +161,7 @@ export default defineComponent({
               position: 'bottom',
               timeout: 3500
             })
+            this.$q.loading.hide()
             this.$router.push('/home')
           }
         });

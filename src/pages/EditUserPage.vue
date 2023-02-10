@@ -114,6 +114,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import {QSpinnerFacebook} from "quasar";
+
 export default {
   name: "EditUserPage",
   data() {
@@ -135,14 +138,19 @@ export default {
   },
   methods: {
     async getUser() {
+      this.$q.loading.show({
+        message: 'Loading data ...',
+        spinnerSize: 150,
+        spinner: QSpinnerFacebook,
+        backgroundColor: 'blue-7',
+        spinnerColor: 'orange-7',
+      });
       let id = this.$route.params.id;
       if (id === "new") {
         return;
       }
-      const response = await fetch(`${process.env.API}/user/${id}`, {
-        method: "GET",
-      })
-      let user = await response.json();
+      const response = await axios.get(`${process.env.API}/user/${id}`)
+      let user = await response.data
       this.user_data.user_id = id
       this.user_data.first_name = user.user_data ? user.user_data.first_name : "";
       this.user_data.last_name1 = user.user_data ? user.user_data.last_name1 : "";
@@ -154,17 +162,17 @@ export default {
       this.user_data.postal_code = user.user_data ? user.user_data.postal_code : "";
       this.username = user.username;
       this.role = user.role;
+      this.$q.loading.hide();
     },
 
     async saveUser() {
       let id = this.$route.params.id;
       if (id !== "new") {
-        await fetch(`${process.env.API}/user/${id}`, {
-          method: "PUT",
+        await axios.put(`${process.env.API}/user/${id}`, {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
+          body: ({
             email: this.email,
             role: this.role,
             userData: {

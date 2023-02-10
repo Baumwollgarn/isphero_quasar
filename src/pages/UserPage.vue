@@ -1,6 +1,7 @@
 <template>
   <div class="q-pa-md">
-  <q-markup-table>
+  <q-markup-table
+  >
     <q-tr>
       <q-th colspan="7">
         <div class="row no-wrap items-center">
@@ -72,7 +73,8 @@
 
 <script>
 import {ref} from "vue";
-import {useQuasar} from "quasar";
+import {QSpinnerFacebook, useQuasar} from "quasar";
+import axios from "axios";
 
 export default {
   name: "UserPage",
@@ -94,10 +96,15 @@ export default {
       this.deleteId = id;
     },
     async getUsers() {
-      const response = await fetch(process.env.API + "/users", {
-        method: "GET",
+      this.$q.loading.show({
+        message: 'Loading data ...',
+        spinnerSize: 150,
+        spinner: QSpinnerFacebook,
+        backgroundColor: 'blue-7',
+        spinnerColor: 'orange-7',
       })
-      let userMap = await response.json();
+      const response = await axios.get(`${process.env.API}/users`);
+      let userMap = await response.data;
       this.users = userMap.map((user) => {
         return {
           id: user.id,
@@ -108,6 +115,7 @@ export default {
           role: user.role,
         };
       });
+      this.$q.loading.hide();
       return this.users;
     },
     filterUsers() {
@@ -122,9 +130,7 @@ export default {
       });
     },
     deleteUser() {
-      fetch(`${process.env.API}/user/${this.deleteId}`, {
-        method: "DELETE",
-      })
+      axios.delete(`${process.env.API}/user/${this.deleteId}`)
         .then(async (response) => {
           if (response.status === 200) {
             this.responseMessage = "User deleted successfully";
