@@ -49,18 +49,24 @@ module.exports = configure(function (ctx) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js#Property%3A-build
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
-      env: {
-        API: ctx.dev
-          ? 'http://localhost:8000'
-          : 'https://isphero.com:1234',
-        LOGIN: ctx.dev
-          ? 'https://isphero.com'
-          : 'https://isphero.com',
-      },
 
-      /*env: require("dotenv").config({
-        path: (process.env.ENVIRONMENT) ? `.env.${process.env.ENVIRONMENT}` : ".env.developer"
-      }).parsed,*/
+      // Use this ENV to set the URLs for DEV and PROD environments if .env.prod doesn't work for you somehow
+      /*env: {
+        API: ctx.dev
+          ? 'DEV.API_URL'
+          : 'PROD.API_URL',
+        LOGIN: ctx.dev
+          ? 'DEV.LOGIN_URL'
+          : 'PROD.LOGIN_URL',
+      },*/
+
+      // Parsing of .env.prod file to get the environment variables
+      env: require('dotenv').config(
+        {
+          path: ctx.dev ? '.env.dev' : '.env.prod'
+        }
+      ).parsed,
+
 
       // transpile: false,
       // publicPath: '/',
