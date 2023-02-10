@@ -37,6 +37,7 @@
       </template>
       <template v-slot:body="props">
         <q-tr :props="props">
+
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             <q-item v-if="col.name === 'selected'">
               <q-item-section avatar>
@@ -57,53 +58,6 @@
       </template>
     </q-table>
   </div>
-<!--
-  <div class="q-pa-md">
-    <q-markup-table flat bordered>
-      <thead class="bg-blue-2">
-      <tr>
-        <th colspan="5">
-          <div class="row no-wrap items-center">
-            <div class="col">
-              <q-input
-                v-model="search"
-                debounce="500"
-                rounded
-                dense
-                placeholder="Search"
-                color="white"
-                inverted
-                class="text-white"
-              />
-            </div>
-            <div class="col-auto">
-              <q-btn
-                icon="delete"
-                color="red"
-                inverted
-                @click="confirm = true"
-              />
-            </div>
-          </div>
-        </th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="row in rows" :key="row.id">
-        <td style="display: none">{{ row.id }}</td>
-        <td>{{ row.email }}</td>
-        <td>
-          <q-checkbox
-            v-model="row.selected"
-            dense
-            color="red"
-          />
-        </td>
-      </tr>
-      </tbody>
-    </q-markup-table>
-    -->
-
   <q-dialog v-model="confirm" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -206,13 +160,10 @@ export default {
     },
     async deleteEmails(emailsToDelete) {
       for (let i = 0; i < emailsToDelete.length; i++) {
-        await fetch(process.env.API + "/newsletter/" + emailsToDelete[i], {
-          method: "DELETE",
-        })
+        await axios.delete(process.env.API + "/newsletter/" + emailsToDelete[i])
           .then((response) => {
             if (response.status === 200) {
-              console.log("Email deleted");
-              this.showNotificationDelete();
+              console.log("Email(s) deleted");
               this.rowsFiltered = this.rows;
             }
           })
@@ -220,6 +171,7 @@ export default {
             console.log(error);
           });
       }
+      this.showNotificationDelete();
     },
   },
   async mounted() {

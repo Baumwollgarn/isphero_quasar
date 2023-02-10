@@ -115,7 +115,7 @@
 
 <script>
 import axios from "axios";
-import {QSpinnerFacebook} from "quasar";
+import {QSpinnerFacebook, QSpinnerIos} from "quasar";
 
 export default {
   name: "EditUserPage",
@@ -138,13 +138,15 @@ export default {
   },
   methods: {
     async getUser() {
-      this.$q.loading.show({
-        message: 'Loading data ...',
-        spinnerSize: 150,
-        spinner: QSpinnerFacebook,
-        backgroundColor: 'blue-7',
-        spinnerColor: 'orange-7',
-      });
+      if (this.$route.params.id !== 'new') {
+        this.$q.loading.show({
+          message: 'Loading data ...',
+          spinnerSize: 150,
+          spinner: QSpinnerFacebook,
+          backgroundColor: 'blue-7',
+          spinnerColor: 'orange-7',
+        })
+      }
       let id = this.$route.params.id;
       if (id === "new") {
         return;
@@ -166,13 +168,18 @@ export default {
     },
 
     async saveUser() {
+      this.$q.loading.show({
+        message: 'Saving data ...',
+        spinnerSize: 150,
+        spinner: QSpinnerIos,
+        backgroundColor: 'blue-7',
+        spinnerColor: 'orange-7',
+      })
       let id = this.$route.params.id;
       if (id !== "new") {
         await axios.put(`${process.env.API}/user/${id}`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: ({
+            username: this.username,
             email: this.email,
             role: this.role,
             userData: {
@@ -185,16 +192,23 @@ export default {
               postal_code: this.user_data.postal_code,
             }
           })
+        }).catch(error => {
+          if(error.response.status === 500) {
+            this.$q.loading.hide()
+            this.$q.notify({
+              message: 'Error saving data : ' + error.response.data.message,
+              color: 'negative',
+              position: 'top',
+              timeout: 2000
+            })
+          }
         })
+        this.$q.loading.hide();
         this.$router.push("/home/users");
       }
       if (id === "new") {
-        await fetch(`${process.env.API}/user`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        await axios.post(`${process.env.API}/user`, {
+          body: ({
             email: this.email,
             role: this.role,
             username: this.username,
@@ -208,7 +222,18 @@ export default {
               postal_code: this.user_data.postal_code,
             }
           })
+        }).catch(error => {
+          if(error.response.status === 500) {
+            this.$q.loading.hide()
+            this.$q.notify({
+              message: 'Error saving data : ' + error.response.data.message,
+              color: 'negative',
+              position: 'top',
+              timeout: 2000
+            })
+          }
         })
+        this.$q.loading.hide();
         this.$router.push("/home/users");
       }
     }

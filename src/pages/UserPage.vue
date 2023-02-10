@@ -130,6 +130,12 @@ export default {
       });
     },
     deleteUser() {
+      this.$q.notify({
+        message: "Deleting user...",
+        color: "primary",
+        position: "bottom",
+        timeout: 2000,
+      });
       axios.delete(`${process.env.API}/user/${this.deleteId}`)
         .then(async (response) => {
           if (response.status === 200) {
@@ -163,12 +169,9 @@ export default {
           message: this.responseMessage,
           color: this.colorMessage,
           position: "bottom",
-          timeout: 10000,
+          timeout: 5000,
           icon: 'person',
-          actions: [{ icon: "close", color: "white", label: "Close", handler: () => {
-              console.log("Close notification");
-            }
-          }],
+          actions: [{ icon: "close", color: "white", label: "Close"}],
         });
       },
     }
