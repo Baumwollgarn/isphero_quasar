@@ -1,6 +1,9 @@
-# ISP Hero (isp-hero-quasar)
+# _Welcome to_ ISP Hero's Admin Dashboard made in ![Quasar](https://img.shields.io/badge/Quasar-1976D2?style=for-the-badge&logo=quasar&logoColor=white)!
+![Counter](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FBaumwollgarn/isphero_quasar1212%2Fhit-counter)
 
-ISP Hero Quasar
+First steps to get started is to clone this repository.
+
+After that:
 
 ## Install the dependencies
 ```bash
@@ -8,7 +11,10 @@ yarn
 # or
 npm install
 ```
+### Set up environment variables
 
+First you have to set up the environment variables for the Dev and Prod endpoints in the .env samples.
+The dotenv parser will inject the necessary URLs depending on if you do a ```quasar build``` or ```quasar dev```.
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)
 ```bash
 quasar dev
