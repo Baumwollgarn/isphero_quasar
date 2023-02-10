@@ -119,7 +119,7 @@ export default defineComponent({
     if (localStorage.getItem('token') === null) {
       recaptchaScript.onload = () => {
         google.accounts.id.initialize({
-          client_id: '578391080478-tld06kdi3jv6guggqbuj5vrua8cq15vh.apps.googleusercontent.com',
+          client_id: process.env.CLIENT_ID + '.apps.googleusercontent.com',
           callback: async (responseGoogle) => {
             const tokenGoogle = responseGoogle.credential;
             this.$q.loading.show({
