@@ -43,7 +43,13 @@
           icon="logout"
           aria-label="Logout"
           @click="logout"
-        />
+        >
+          <q-tooltip
+            anchor="top middle"
+            self="bottom middle"
+            >Logout
+          </q-tooltip>
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -96,7 +102,7 @@ const linksList = [
     icon: 'email',
     link: '#/home/newsletter'
   },
-{
+  {
     title: 'Services',
     caption: 'All services',
     icon: 'view_list',
@@ -163,7 +169,7 @@ export default defineComponent({
       localStorage.removeItem('token')
       this.$router.push('/')
     }
-    this.getActualTime()
+    //this.getActualTime()
   },
 
   setup () {

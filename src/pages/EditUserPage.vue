@@ -101,12 +101,22 @@
               </q-select>
             </div>
           </div>
-          <q-btn
-            label="Save"
-            color="primary"
-            @click="saveUser"
-            class="self-center"
-          />
+          <div class="flex justify-evenly">
+            <q-btn
+              label="Cancel"
+              color="negative"
+              class="self-center"
+              @click="goBack"
+              rounded
+            />
+            <q-btn
+              label="Save"
+              color="primary"
+              @click="saveUser"
+              class="self-center"
+              rounded
+            />
+          </div>
         </q-form>
       </q-card-section>
     </q-card>
@@ -137,6 +147,9 @@ export default {
     }
   },
   methods: {
+    goBack() {
+      this.$router.push("/home/users")
+    },
     async getUser() {
       if (this.$route.params.id !== 'new') {
         this.$q.loading.show({

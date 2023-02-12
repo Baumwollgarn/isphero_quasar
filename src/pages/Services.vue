@@ -14,7 +14,11 @@
             v-model:pagination="pagination"
             :rows-per-page-options="[0]"
             :loading="loading"
-            row-key="id"></q-table>
+            row-key="id"
+            @sort="sortServices"
+          >
+
+          </q-table>
         </div>
         <div v-if="activeTab === 'tab2'">
           <q-table
@@ -106,6 +110,10 @@ export default {
             active: service.is_cancelled ? "No" : "Yes",
             user_id: service.user_id,
           }
+        })
+        serviceMap.forEach((service) => {
+          let dateFormat = new Date(service.expiry_date);
+          service.expiry_date = dateFormat.getFullYear() + "-" + (dateFormat.getMonth() + 1) + "-" + dateFormat.getDate();
         })
         this.loading = false;
         this.services = serviceMap;
