@@ -20,13 +20,6 @@
               <template v-slot:before>
                 <q-icon name="person" />
               </template>
-              <template v-slot:after>
-                <q-btn
-                  icon="add"
-                  color="green"
-                  @click="editUser('new')"
-                />
-              </template>
             </q-input>
           </div>
         </div>
@@ -49,9 +42,15 @@
       <q-td>{{ user.email }}</q-td>
       <q-td>{{ user.role }}</q-td>
       <q-td>
-        <q-btn color="primary" icon="edit" @click="editUser(user.id)" class="q-mx-xs"/>
-        <q-btn color="negative" icon="delete" @click="confirm = true; setDeleteId(user.id)" class="q-mx-xs"/>
-        <q-btn color="black" icon="vpn_key" @click="showServices(user.id)" class="q-mx-xs"/>
+        <q-btn color="primary" icon="edit" @click="editUser(user.id)" class="q-mx-xs">
+          <q-tooltip class="bg-black" :offset="[10, 10]">Edit</q-tooltip>
+        </q-btn>
+        <q-btn color="negative" icon="delete" @click="confirm = true; setDeleteId(user.id)" class="q-mx-xs">
+          <q-tooltip class="bg-black" :offset="[10, 10]">Delete</q-tooltip>
+        </q-btn>
+        <q-btn color="black" icon="vpn_key" @click="showServices(user.id)" class="q-mx-xs">
+          <q-tooltip class="bg-red" :offset="[10, 10]">Services</q-tooltip>
+        </q-btn>
       </q-td>
     </q-tr>
   </q-markup-table>
@@ -68,6 +67,11 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+    <q-page-sticky position="bottom-right" :offset="[18, 50]">
+      <q-btn fab icon="add" color="green-7" @click="editUser('new')">
+        <q-tooltip class="bg-black" :offset="[10, 10]">Add</q-tooltip>
+      </q-btn>
+    </q-page-sticky>
   </div>
 </template>
 
@@ -159,6 +163,9 @@ export default {
     },
     editUser(id) {
       this.$router.push(`/home/edit-user/${id}`)
+    },
+    showServices(id) {
+      this.$router.push(`/home/services/${id}`)
     },
   },
   setup() {

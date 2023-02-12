@@ -1,4 +1,5 @@
 <template>
+<!--
       <q-table
         :rows="toDoList"
         :columns="columns"
@@ -7,6 +8,7 @@
         :rows-per-page-options="[0]"
         :loading="loading"
         :search="search"
+        :sort="sort"
         >
         <template v-slot:top>
           <q-toolbar>
@@ -25,29 +27,41 @@
             </q-input>
           </q-toolbar>
         </template>
+        <template v-slot:body-cell-task="props">
+          <q-td :props="props">
+            <q-item v-if="props.row.completed" class="input-group&#45;&#45;active">
+              {{props.row.task}}
+            </q-item>
+            <q-item v-else>
+              <q-item-section>
+                <q-item-label>{{props.row.task}}</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-td>
+        </template>
         <template v-slot:body-cell-actions="props">
-          <q-tr :props="props">
-            <q-td>
-              <q-item >
-                {{props.row.completed}}
+            <q-td :props="props">
+              <q-item v-if="props.row.completed" class>
+                  <q-btn dense flat color="grey" icon="X" @click="markAsCompleted(props.row.id)" />
               </q-item>
-              <q-item>
-                <q-item-section>
-                  {{ props.value }}
-                </q-item-section>
+              <q-item v-else>
+                  <q-btn dense flat color="green" icon="done" @click="markAsCompleted(props.row.id)" />
               </q-item>
             </q-td>
-          </q-tr>
         </template>
       </q-table>
+-->
 </template>
 
 <script>
+
+import axios from "axios";
+
 export default {
   name: "DashboardPage",
   data() {
     return {
-      toDoList: [],
+      /*toDoList: [],
       loading: false,
       search: '',
       pagination: {
@@ -62,7 +76,7 @@ export default {
         field: 'id',
         align: 'left',
         sortable: true,
-      },
+        },
         {
           name: 'task',
           label: 'Task',
@@ -75,7 +89,11 @@ export default {
           label: 'Actions',
           field: 'actions',
           align: 'left',
-      }]
+      }],
+      sort: {
+        field: 'id',
+        direction: 'desc'
+      }*/
     }
   },
   methods:{
@@ -99,14 +117,16 @@ export default {
         .catch(error => {
           console.log(error)
         })
-    }
+    },
   },
   mounted() {
-    this.getToDoList()
   }
 }
 </script>
 
 <style scoped>
-
+.input-group--active {
+  text-decoration: line-through;
+  color: grey;
+}
 </style>
