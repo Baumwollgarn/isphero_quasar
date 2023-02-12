@@ -24,14 +24,18 @@
           aria-label="Notifications"/>
           <!--@click="toggleRightDrawer" -->
 
-        <q-btn
-          flat
-          dense
-          round
+        <q-btn-dropdown
+          color="white"
+          outline
           icon="settings"
-          aria-label="Settings"
-          @click="settings"
-        />
+        >
+          <div class="row no-wrap q-pa-md">
+            <div class="column">
+              <div class="text-h6 q-mb-md">Settings</div>
+              <q-toggle v-model="darkMode" label="Darkmode" @update:model-value="toggleDarkMode" />
+            </div>
+          </div>
+        </q-btn-dropdown>
         <q-btn
           flat
           dense
@@ -115,10 +119,14 @@ export default defineComponent({
   data() {
     return {
       time: '',
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
+      darkMode: false,
     }
   },
   methods: {
+    toggleDarkMode() {
+      this.$q.dark.toggle()
+    },
     logout() {
       localStorage.removeItem('token')
       this.$router.push('/')
@@ -166,7 +174,8 @@ export default defineComponent({
       leftDrawerOpen,
       toggleLeftDrawer () {
         leftDrawerOpen.value = !leftDrawerOpen.value
-      }
+      },
+      darkMode: ref(document.body.classList.contains('q-dark'))
     }
   }
 })
