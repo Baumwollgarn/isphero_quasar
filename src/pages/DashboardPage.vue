@@ -1,19 +1,23 @@
 <template>
-        <div class="text-h6">Services which expire soon:</div>
-        <q-table
-          :rows="servicesExpireSoon"
-          :columns="servicesColumns"
-          :rows-per-page-options="[0]"
-          :loading="loading"
-          row-key="id"></q-table>
+  <div class="text-h6">Services which expire soon:</div>
+  <q-table
+    :rows="servicesExpireSoon"
+    :columns="servicesColumns"
+    :rows-per-page-options="[0]"
+    :loading="loading"
+    row-key="id"></q-table>
+  <Chatwindow/>
 </template>
 
 <script>
 
 import axios from "axios";
+import Chatwindow from "components/Chatwindow.vue";
+
 
 export default {
   name: "DashboardPage",
+  components: {Chatwindow},
   data() {
     return {
       loading: false,

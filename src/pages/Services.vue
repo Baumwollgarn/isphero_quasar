@@ -15,9 +15,7 @@
             :rows-per-page-options="[0]"
             :loading="loading"
             row-key="id"
-            @sort="sortServices"
           >
-
           </q-table>
         </div>
         <div v-if="activeTab === 'tab2'">

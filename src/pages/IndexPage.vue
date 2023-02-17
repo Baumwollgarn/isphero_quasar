@@ -10,8 +10,10 @@
 
 <script>
 import { defineComponent } from 'vue'
+import Chatwindow from "components/Chatwindow.vue";
 
 export default defineComponent({
-  name: 'IndexPage'
+  name: 'IndexPage',
+  components: {Chatwindow}
 })
 </script>

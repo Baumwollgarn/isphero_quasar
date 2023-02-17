@@ -133,14 +133,14 @@ export default {
         );
       });
     },
-    deleteUser() {
+    async deleteUser() {
       this.$q.notify({
         message: "Deleting user...",
         color: "primary",
         position: "bottom",
-        timeout: 2000,
+        timeout: 1000,
       });
-      axios.delete(`${process.env.API}/user/${this.deleteId}`)
+      let int = await axios.delete(`${process.env.API}/user/${this.deleteId}`)
         .then(async (response) => {
           if (response.status === 200) {
             this.responseMessage = "User deleted successfully";
@@ -148,18 +148,17 @@ export default {
             this.showNotificationDelete()
             this.usersFiltered = await this.getUsers();
           }
-          if (response.status === 400) {
-            response.json().then((data) => {
+          if (response.status === 403) {
               this.responseMessage = data.message;
               this.colorMessage = "negative";
               this.showNotificationDelete()
-            });
           }
         })
         .catch((error) => {
-          console.error("Error:", error);
+          this.responseMessage = error.response.data.message;
+          this.colorMessage = "negative";
+          this.showNotificationDelete()
         });
-
     },
     editUser(id) {
       this.$router.push(`/home/edit-user/${id}`)
