@@ -1,8 +1,16 @@
 <template>
     <q-card flat bordered class="window">
       <q-card-section>
-        <div class="text-h6">Support Chat</div>
+        <div class="row flex items-center no-wrap">
+          <div class="col">
+            <div class="text-h6">Support chat</div>
+          </div>
+          <div class="col-auto self-end">
+            <q-btn color="grey-7" round flat icon="more_vert"/>
+          </div>
+        </div>
       </q-card-section>
+
 
       <q-separator inset />
 
@@ -101,7 +109,7 @@ export default {
 
 <style scoped lang="scss">
 .window {
-  z-index: 100;
+  z-index: 1000;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -111,7 +119,7 @@ export default {
   width: 300px;
   height: 450px;
   bottom: 25px;
-  right: 50px;
+  left: 10px;
 
   .window-title{
     background: #478aef;
