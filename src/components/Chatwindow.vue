@@ -1,12 +1,15 @@
 <template>
-    <q-card flat bordered class="window">
+  <q-card v-if="!hidden" flat bordered class="window">
       <q-card-section>
         <div class="row flex items-center no-wrap">
           <div class="col">
             <div class="text-h6">Support chat</div>
           </div>
           <div class="col-auto self-end">
-            <q-btn color="grey-7" round flat icon="more_vert"/>
+            <q-btn color="grey-7" round flat icon="more_vert" @click="hidden = true"/>
+          </div>
+          <div class="col-auto self-end">
+            <q-btn color="grey-7" round flat icon="delete" @click="deleteMessages"/>
           </div>
         </div>
       </q-card-section>
@@ -33,11 +36,15 @@
         />
       </q-card-section>
     </q-card>
+
+  <div class="chat-btn">
+    <q-btn v-if="hidden" color="primary" @click="hidden = false" round fab icon="chat" />
+  </div>
 </template>
 
 <script>
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, setDoc, onSnapshot, doc} from 'firebase/firestore';
+import { getFirestore, collection, setDoc, getDoc, updateDoc, onSnapshot, doc, deleteDoc} from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDI3S-pmy8cjQgd9C25-BhC7nq7m-AIzMY",
@@ -56,16 +63,22 @@ let messageCollection;
 
 export default {
   name: "Chatwindow",
+  props: {
+    user: String,
+  },
   data() {
     return {
       message: "",
       messages: [],
-      user: "alex",
       userRef: "Admin",
       users: [],
+      hidden: true
     }
   },
   methods: {
+    openChatWindow() {
+      this.hidden = false;
+    },
     async sendMessage() {
       if (this.message === "") {
         return;
@@ -73,27 +86,54 @@ export default {
       let date = new Date();
       date = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
-      const message = {
-        message: this.message,
-        name: this.userRef,
-        date: date
-      }
+      messageCollection = collection(db, 'messages');
+      await getDoc(doc(db, "messages", 'chat--' + this.user)).then((docSnapshot) => {
+        if (docSnapshot.exists()) {
+          messageCollection = collection(db, 'messages', 'chat--' + this.user, 'messages');
+        }
+        messageCollection = collection(db, 'messages');
+        setDoc(doc(db, "messages", 'chat--' + this.user), {
+          username: this.user,
+        });
+        updateDoc(doc(db, "messages", 'chat--' + this.user), {
+          lastMessage: this.message,
+          lastMessageDate: date
+        })
+        let seconds = new Date().getTime() / 1000;
+        messageCollection = collection(db, 'messages', 'chat--' + this.user, 'messages');
+        setDoc(doc(db, "messages", 'chat--' + this.user, 'messages', this.user + '-' + seconds), {
+          message: this.message,
+          name: this.userRef,
+          date: date
+        });
 
-      messageCollection = collection(db, 'messages-' + this.user);
-      await setDoc(doc(messageCollection, this.user + "-" + Date.now()), message);
-      this.message = "";
+        this.message = "";
+      });
+    },
+    deleteMessages() {
+      messageCollection = collection(db, 'messages', 'chat--' + this.user, 'messages');
+      onSnapshot(messageCollection, (querySnapshot) => {
+        querySnapshot.forEach((docum) => {
+          deleteDoc(doc(db, "messages", 'chat--' + this.user, 'messages', docum.id));
+        });
+      });
+      updateDoc(doc(db, "messages", 'chat--' + this.user), {
+        lastMessage: '',
+        lastMessageDate: ''
+      })
+      console.log("Messages deleted")
     }
   },
   mounted() {
     let audio = new Audio("/notification.mp3");
-    messageCollection = collection(db, 'messages-' + this.user);
+    messageCollection = collection(db, 'messages', 'chat--' + this.user, 'messages');
     onSnapshot(messageCollection, (querySnapshot) => {
       this.messages = [];
       querySnapshot.forEach((doc) => {
         this.messages.push(doc.data());
       });
-      // If a new message is added, scroll to the bottom of the chat
       this.$nextTick(() => {
+        if(this.hidden) return;
         let messages = document.querySelector(".messages");
         messages.scrollTop = messages.scrollHeight;
         if ((this.messages[this.messages.length - 1].name !== this.userRef
@@ -102,7 +142,22 @@ export default {
         }
       });
     });
-
+  },
+  watch: {
+    user: function (val) {
+      messageCollection = collection(db, 'messages', 'chat--' + this.user, 'messages');
+      onSnapshot(messageCollection, (querySnapshot) => {
+        this.messages = [];
+        querySnapshot.forEach((doc) => {
+          this.messages.push(doc.data());
+        });
+        this.$nextTick(() => {
+          if(this.hidden) return;
+          let messages = document.querySelector(".messages");
+          messages.scrollTop = messages.scrollHeight;
+        });
+      });
+    }
   }
 }
 </script>
@@ -134,7 +189,15 @@ export default {
 
   .messages {
     height: auto;
-    overflow: scroll;
+    width: 100%;
+    overflow-y: scroll;
   }
+}
+
+.chat-btn {
+  position: fixed;
+  bottom: 25px;
+  left: 10px;
+  z-index: 1000;
 }
 </style>

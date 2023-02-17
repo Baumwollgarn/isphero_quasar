@@ -6,22 +6,26 @@
     :rows-per-page-options="[0]"
     :loading="loading"
     row-key="id"></q-table>
-  <Chatwindow/>
+
+  <ChatList @chat="setChatUsername" @user-list="getUserListFromChild"/>
+  <Chatwindow :user="chatWithUser"/>
 </template>
 
 <script>
 
 import axios from "axios";
 import Chatwindow from "components/Chatwindow.vue";
+import ChatList from "components/ChatList.vue";
 
 
 export default {
   name: "DashboardPage",
-  components: {Chatwindow},
+  components: {ChatList, Chatwindow},
   data() {
     return {
       loading: false,
       servicesExpireSoon: [],
+      chatWithUser: "alex",
       servicesColumns: [
         {
           name: "id",
@@ -58,9 +62,17 @@ export default {
           align: "left",
         }
       ],
+      users: []
     }
   },
   methods:{
+    setChatUsername(username) {
+      this.chatWithUser = username;
+      this.$forceUpdate();
+    },
+    getUserListFromChild(userList) {
+      this.users = userList;
+    },
     getServicesExpireSoon() {
       this.loading = true;
       axios.get(process.env.API + "/services/expire_soon")
@@ -91,4 +103,8 @@ export default {
 </script>
 
 <style scoped>
+.flex {
+  display: flex;
+  gap: 10px;
+}
 </style>
