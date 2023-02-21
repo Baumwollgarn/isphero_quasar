@@ -110,6 +110,12 @@ const linksList = [
     link: '#/home/services'
   },
   {
+    title: 'Properties',
+    caption: 'Overview & listing',
+    icon: 'view_list',
+    link: '#/home/properties'
+  },
+  {
     title: 'Settings',
     caption: 'Change settings',
     icon: 'settings',

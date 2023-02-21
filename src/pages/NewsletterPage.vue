@@ -37,7 +37,6 @@
       </template>
       <template v-slot:body="props">
         <q-tr :props="props">
-
           <q-td v-for="col in props.cols" :key="col.name" :props="props">
             <q-item v-if="col.name === 'selected'">
               <q-item-section avatar>
