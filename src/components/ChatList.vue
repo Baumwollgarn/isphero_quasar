@@ -2,20 +2,22 @@
 <q-card>
   <q-card-section>
     <q-list>
-      <q-item v-for="chat in chatList" :key="chat.id" clickable @click="goToChat(chat.username)">
-        <q-item-section avatar>
-          <q-avatar>
-            <img src="https://cdn.quasar.dev/img/avatar.png" alt="asd">
-          </q-avatar>
-        </q-item-section>
-        <q-item-section>
-          <q-item-label>{{chat.username}}</q-item-label>
-          <q-item-label caption>{{chat.lastMessage}}</q-item-label>
-        </q-item-section>
-        <q-item-section side>
-          <q-item-label caption>{{chat.lastMessageDate}}</q-item-label>
-        </q-item-section>
-      </q-item>
+      <div v-for="chat in chatList" :key="chat.id" >
+        <q-item v-if="chat.lastMessage !== ''" clickable @click="goToChat(chat.username)" >
+          <q-item-section avatar v-if="chat.lastMessage !== ''"  >
+            <q-avatar>
+              <img src="https://cdn.quasar.dev/img/avatar.png" alt="asd">
+            </q-avatar>
+          </q-item-section>
+          <q-item-section v-if="chat.lastMessage !== ''" >
+            <q-item-label>{{chat.username}}</q-item-label>
+            <q-item-label caption>{{chat.lastMessage}}</q-item-label>
+          </q-item-section>
+          <q-item-section side v-if="chat.lastMessage !== ''" >
+            <q-item-label caption>{{chat.lastMessageDate}}</q-item-label>
+          </q-item-section>
+        </q-item>
+      </div>
     </q-list>
   </q-card-section>
 </q-card>
@@ -26,15 +28,16 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, addDoc, doc, getDocs, setDoc, collectionGroup } from 'firebase/firestore';
 import axios from "axios";
 
+var moment = require('moment');
 const firebaseConfig = {
-  apiKey: "AIzaSyDI3S-pmy8cjQgd9C25-BhC7nq7m-AIzMY",
-  authDomain: "isphero.firebaseapp.com",
-  databaseURL: "https://isphero-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "isphero",
-  storageBucket: "isphero.appspot.com",
-  messagingSenderId: "911722930693",
-  appId: "1:911722930693:web:ec66e3f3d8f6df1f41726c",
-  measurementId: "G-S2C6VQWGXP"
+  apiKey: process.env.VITE_API_KEY,
+  authDomain: process.env.VITE_AUTH_DOMAIN,
+  databaseURL: process.env.VITE_DATABASE_URL,
+  projectId: process.env.VITE_PROJECT_ID,
+  storageBucket: process.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: process.env.VITE_SENDER_ID,
+  appId: process.env.VITE_APP_ID,
+  measurementId: process.env.VITE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
@@ -57,7 +60,7 @@ export default {
             id: doc.id,
             username: data.username,
             lastMessage: data.lastMessage,
-            lastMessageDate: data.lastMessageDate,
+            lastMessageDate: data.lastMessageDate
           }
           this.chatList.push(chat);
           this.users.push(data.username)

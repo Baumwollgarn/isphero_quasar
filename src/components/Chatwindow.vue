@@ -3,7 +3,7 @@
       <q-card-section>
         <div class="row flex items-center no-wrap">
           <div class="col">
-            <div class="text-h6">Support chat</div>
+            <div class="text-h6">Support chat with {{user}}</div>
           </div>
           <div class="col-auto self-end">
             <q-btn color="grey-7" round flat icon="more_vert" @click="hidden = true"/>
@@ -24,6 +24,8 @@
                         :text=[message.message]
                         :stamp="message.date"
                         :sent="message.name === 'Admin'"
+                        :bg-color="message.name !== 'Admin' ? 'primary' : 'green-3'"
+                        :text-color="message.name !== 'Admin' ? 'white' : 'black'"
         />
       </q-card-section>
 
@@ -65,6 +67,7 @@ export default {
   name: "Chatwindow",
   props: {
     user: String,
+    hidden: Boolean
   },
   data() {
     return {
@@ -72,13 +75,9 @@ export default {
       messages: [],
       userRef: "Admin",
       users: [],
-      hidden: true
     }
   },
   methods: {
-    openChatWindow() {
-      this.hidden = false;
-    },
     async sendMessage() {
       if (this.message === "") {
         return;

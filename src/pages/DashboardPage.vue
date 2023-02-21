@@ -8,7 +8,7 @@
     row-key="id"></q-table>
 
   <ChatList @chat="setChatUsername" @user-list="getUserListFromChild"/>
-  <Chatwindow :user="chatWithUser"/>
+  <Chatwindow :user="chatWithUser" :hidden="chatHidden"/>
 </template>
 
 <script>
@@ -26,6 +26,7 @@ export default {
       loading: false,
       servicesExpireSoon: [],
       chatWithUser: "alex",
+      chatHidden: true,
       servicesColumns: [
         {
           name: "id",
@@ -68,6 +69,7 @@ export default {
   methods:{
     setChatUsername(username) {
       this.chatWithUser = username;
+      this.chatHidden = false;
       this.$forceUpdate();
     },
     getUserListFromChild(userList) {
@@ -103,8 +105,5 @@ export default {
 </script>
 
 <style scoped>
-.flex {
-  display: flex;
-  gap: 10px;
-}
+
 </style>

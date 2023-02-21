@@ -73,8 +73,6 @@
       </q-list>
     </q-drawer>
 
-    <Chatwindow/>
-
     <q-page-container>
       <router-view />
     </q-page-container>
