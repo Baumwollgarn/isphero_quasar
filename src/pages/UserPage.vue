@@ -20,6 +20,12 @@
               <template v-slot:before>
                 <q-icon name="person" />
               </template>
+              <template v-slot:after>
+                <div>
+                  <q-btn icon="mic" color="green" v-if="!isRecording" @click="startRecording" />
+                  <q-btn icon="stop" color="red" v-else @click="stopRecording" />
+                </div>
+              </template>
             </q-input>
           </div>
         </div>
@@ -54,6 +60,14 @@
       </q-td>
     </q-tr>
   </q-markup-table>
+    <div class="row justify-end">
+      <q-btn
+        color="primary"
+        label="Export to PDF"
+        icon="picture_as_pdf"
+        @click="exportToPdf"
+      />
+    </div>
   <q-dialog v-model="confirm" persistent>
     <q-card>
       <q-card-section class="row items-center">
@@ -77,11 +91,17 @@
 
 <script>
 import {ref} from "vue";
-import {QSpinnerFacebook, useQuasar} from "quasar";
+import {QSpinnerFacebook, useQuasar, exportFile} from "quasar";
 import axios from "axios";
+import { jsPDF } from "jspdf";
+import autoTable from 'jspdf-autotable';
+
 
 export default {
   name: "UserPage",
+  components: {
+
+  },
   data() {
     return {
       alert: ref(false),
@@ -93,9 +113,53 @@ export default {
       deleteId: null,
       responseMessage: null,
       colorMessage: null,
+      isRecording: false,
+      mediaRecorder: null,
+      chunks: [],
+      stream: null,
     };
   },
   methods: {
+    async startRecording() {
+      this.isRecording = true;
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.mediaRecorder = new MediaRecorder(stream);
+      this.mediaRecorder.addEventListener("dataavailable", (event) => {
+        if (event.data.size > 0) {
+          this.chunks.push(event.data);
+        }
+      });
+      this.mediaRecorder.start();
+      this.stream = stream;
+    },
+    stopRecording() {
+      this.isRecording = false;
+      this.mediaRecorder.stop();
+      this.stream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      this.sendRecording();
+    },
+    async sendRecording() {
+      const blob = new Blob(this.chunks, { type: "audio/webm" });
+      const formData = new FormData()
+      formData.append("arxiu", blob, "stuffToTranscribe.webm")
+      const response = await fetch('https://theteacher.codiblau.com/piano/nologin/google/transcribe', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await response.json()
+      if (data.confianca > 0.7) {
+        this.search = data.text
+      } else {
+        this.$q.notify({
+          message: 'No se ha podido reconocer la búsqueda',
+          color: 'red',
+          position: 'top',
+          timeout: 2000,
+        })
+      }
+    },
     setDeleteId(id) {
       this.deleteId = id;
     },
@@ -112,8 +176,8 @@ export default {
       this.users = userMap.map((user) => {
         return {
           id: user.id,
-          first_name: user.user_data ? user.user_data.first_name : " - ",
-          last_name1: user.user_data ? user.user_data.last_name1 : " - ",
+          first_name: user.user_data ? user.user_data.first_name ? user.user_data.first_name : " - " : " - ",
+          last_name1: user.user_data ? user.user_data.last_name1 ? user.user_data.last_name1 : " - " : " - ",
           username: user.username,
           email: user.email,
           role: user.role,
@@ -165,6 +229,29 @@ export default {
     },
     showServices(id) {
       this.$router.push(`/home/services/${id}`)
+    },
+    exportToPdf() {
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
+      doc.text("Users", 10, 10);
+      autoTable(doc, {
+        head: [
+          ["First Name", "Last Name", "Username", "Email", "Role"],
+        ],
+        body: this.usersFiltered.map((user) => {
+          return [
+            user.first_name,
+            user.last_name1,
+            user.username,
+            user.email,
+            user.role,
+          ];
+        }),
+      });
+      doc.save(`Users-${new Date().toISOString()}.pdf`);
     },
   },
   setup() {

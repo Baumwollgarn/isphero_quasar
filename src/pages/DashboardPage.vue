@@ -6,7 +6,7 @@
     :rows-per-page-options="[0]"
     :loading="loading"
     row-key="id"></q-table>
-
+  <h4>Chats</h4>
   <ChatList @chat="setChatUsername" @user-list="getUserListFromChild"/>
   <Chatwindow :user="chatWithUser" :hidden="chatHidden"/>
 </template>
