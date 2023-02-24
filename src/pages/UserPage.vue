@@ -48,7 +48,7 @@
       <q-td>{{ user.email }}</q-td>
       <q-td>{{ user.role }}</q-td>
       <q-td>
-        <q-btn color="primary" icon="edit" @click="editUser(user.id)" class="q-mx-xs">
+        <q-btn color="green-5" icon="edit" @click="editUser(user.id)" class="q-mx-xs">
           <q-tooltip class="bg-black" :offset="[10, 10]">Edit</q-tooltip>
         </q-btn>
         <q-btn color="negative" icon="delete" @click="confirm = true; setDeleteId(user.id)" class="q-mx-xs">

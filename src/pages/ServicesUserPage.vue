@@ -1,6 +1,5 @@
 <template>
         <div class="text-h6">Services</div>
-      <!-- List of services -->
         <q-table
           :rows="services"
           :columns="servicesColumns"

@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header class="bg-amber-9" elevated>
       <q-toolbar>
         <q-btn
           flat
@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          ISP Hero - Admin Panel - {{ time }}
+          ISP Hero - Admin Panel
         </q-toolbar-title>
 
 
@@ -126,7 +126,6 @@ export default defineComponent({
   },
   data() {
     return {
-      time: '',
       leftDrawerOpen: false,
       darkMode: false,
     }
