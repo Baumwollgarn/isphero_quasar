@@ -1,108 +1,105 @@
 <template>
-      <q-table
-        :rows="toDoList"
-        :columns="columns"
-        row-key="id"
-        v-model:pagination="pagination"
-        :rows-per-page-options="[0]"
-        :loading="loading"
-        :search="search"
-        >
-        <template v-slot:top>
-          <q-toolbar>
-            <q-toolbar-title>Tasks</q-toolbar-title>
-            <q-space />
-            <q-input
-              v-model="search"
-              dense
-              rounded
-              debounce="500"
-              placeholder="Search"
-            >
-              <template v-slot:before>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </q-toolbar>
-        </template>
-        <template v-slot:body-cell-actions="props">
-          <q-tr :props="props">
-            <q-td>
-              <q-item >
-                {{props.row.completed}}
-              </q-item>
-              <q-item>
-                <q-item-section>
-                  {{ props.value }}
-                </q-item-section>
-              </q-item>
-            </q-td>
-          </q-tr>
-        </template>
-      </q-table>
+  <div class="text-h6">Services which expire soon:</div>
+  <q-table
+    :rows="servicesExpireSoon"
+    :columns="servicesColumns"
+    :rows-per-page-options="[0]"
+    :loading="loading"
+    row-key="id"></q-table>
+  <h4>Chats</h4>
+  <ChatList @chat="setChatUsername" @user-list="getUserListFromChild"/>
+  <Chatwindow :user="chatWithUser" :hidden="chatHidden"/>
 </template>
 
 <script>
+
+import axios from "axios";
+import Chatwindow from "components/Chatwindow.vue";
+import ChatList from "components/ChatList.vue";
+
+
 export default {
   name: "DashboardPage",
+  components: {ChatList, Chatwindow},
   data() {
     return {
-      toDoList: [],
       loading: false,
-      search: '',
-      pagination: {
-        sortBy: 'id',
-        descending: false,
-        page: 1,
-        rowsPerPage: 5,
-      },
-      columns: [{
-        name: 'id',
-        label: 'ID',
-        field: 'id',
-        align: 'left',
-        sortable: true,
-      },
+      servicesExpireSoon: [],
+      chatWithUser: "alex",
+      chatHidden: true,
+      servicesColumns: [
         {
-          name: 'task',
-          label: 'Task',
-          field: 'task',
-          align: 'left',
+          name: "id",
+          label: "ID",
+          field: "id",
+          align: "left",
           sortable: true,
         },
         {
-          name: 'actions',
-          label: 'Actions',
-          field: 'actions',
-          align: 'left',
-      }]
+          name: "name",
+          label: "Domain",
+          field: "name",
+          align: "left",
+          sortable: true,
+        },
+        {
+          name: "expiry_date",
+          label: "Expiry Date",
+          field: "expiry_date",
+          align: "left",
+          sortable: true,
+        },
+        {
+          name: "active",
+          label: "Active",
+          field: "active",
+          align: "left",
+          sortable: true,
+        },
+        {
+          name: "user_id",
+          label: "User ID",
+          field: "user_id",
+          align: "left",
+        }
+      ],
+      users: []
     }
   },
   methods:{
-    getToDoList(){
-      this.loading = true
-      this.$axios.get(process.env.API + '/todo')
-        .then(response => {
-          this.toDoList = response.data
-          this.loading = false
-          console.log(response.data)
-        })
-        .catch(error => {
-          console.log(error)
+    setChatUsername(username) {
+      this.chatWithUser = username;
+      this.chatHidden = false;
+      this.$forceUpdate();
+    },
+    getUserListFromChild(userList) {
+      this.users = userList;
+    },
+    getServicesExpireSoon() {
+      this.loading = true;
+      axios.get(process.env.API + "/services/expire_soon")
+        .then(async (response) => {
+          let serviceMap = await response.data.map((service) => {
+            return {
+              id: service.id,
+              name: service.name_domain,
+              expiry_date: service.date_expired,
+              active: service.is_cancelled ? "No" : "Yes",
+              user_id: service.user_id,
+            }
+          })
+          this.loading = false;
+          serviceMap.forEach((service) => {
+            let date = new Date(service.expiry_date);
+            service.expiry_date = date.toLocaleDateString();
+          })
+
+          this.servicesExpireSoon = serviceMap;
         })
     },
-    markAsCompleted(id){
-      this.$axios.put(process.env.API + '/todo/' + id)
-        .then(response => {
-          this.getToDoList()
-        })
-        .catch(error => {
-          console.log(error)
-        })
-    }
   },
   mounted() {
-    this.getToDoList()
+    this.getServicesExpireSoon();
   }
 }
 </script>

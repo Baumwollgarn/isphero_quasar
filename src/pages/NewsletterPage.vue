@@ -11,7 +11,7 @@
       >
       <template v-slot:top>
         <q-toolbar>
-          <q-toolbar-title>Users</q-toolbar-title>
+          <q-toolbar-title>Newsletter</q-toolbar-title>
           <q-space />
           <q-input
             v-model="search"
