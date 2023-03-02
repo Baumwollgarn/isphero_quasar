@@ -15,6 +15,8 @@ const routes = [
       { path: 'edit-user/:id', component: () => import('pages/EditUserPage.vue') },
       { path: 'services', component: () => import('pages/Services.vue') },
       { path: 'services/:id', component: () => import('pages/ServicesUserPage.vue') },
+      { path: 'properties', component: () => import('pages/PropertiesPage.vue') },
+      { path: 'property/:id', component: () => import('pages/EditPropertyPage.vue') },
 
     ]
   },
