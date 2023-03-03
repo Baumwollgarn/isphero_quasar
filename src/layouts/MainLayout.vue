@@ -116,6 +116,12 @@ const linksList = [
     link: '#/home/properties'
   },
   {
+    title: 'Languages',
+    caption: 'Manage languages',
+    icon: 'translate',
+    link: '#/home/languages'
+  },
+  {
     title: 'Settings',
     caption: 'Change settings',
     icon: 'settings',
