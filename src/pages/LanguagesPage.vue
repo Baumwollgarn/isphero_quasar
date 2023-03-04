@@ -56,7 +56,7 @@ export default {
   },
   methods: {
     async addLanguage() {
-      let int = await this.$axios.post('http://localhost:8000/language', {
+      let int = await this.$axios.post(`${process.env.API}/language`, {
         body: {
           code: this.selected.value,
           name: this.selected.label
@@ -86,7 +86,7 @@ export default {
     },
     async translateLanguage(code) {
       let promiseArray = []
-      let textAxios = await this.$axios.get('http://localhost:8000/texts')
+      let textAxios = await this.$axios.get(`${process.env.API}/texts`)
         .then(async (response) => {
           this.texts = response.data
           this.$q.loading.show({
@@ -119,7 +119,7 @@ export default {
           })
             .then(() => {
               this.textsTranslated.forEach((text) => {
-                this.$axios.post('http://localhost:8000/text', {
+                this.$axios.post(`${process.env.API}/text`, {
                     lang_code: text.lang_code,
                     key_text_id: text.key_text_id,
                     translate: text.translate
@@ -153,6 +153,7 @@ export default {
                   })
                   .catch((error) => {
                     console.log(error)
+                    this.$q.loading.hide()
                     this.$q.notify({
                       message: error.response.data.message,
                       color: 'red-4',
