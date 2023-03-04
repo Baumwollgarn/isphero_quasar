@@ -21,6 +21,8 @@
 </template>
 
 <script>
+import {QSpinnerIos} from "quasar";
+
 export default {
   name: "Languages",
   data() {
@@ -48,7 +50,8 @@ export default {
 
       ],
       texts: [],
-      textsTranslated: []
+      textsTranslated: [],
+      messageCount: 0,
     }
   },
   methods: {
@@ -67,7 +70,7 @@ export default {
             icon: 'check_circle',
             position: 'bottom'
           })
-          this.translateLanguage(this.selected.value)
+          await this.translateLanguage(this.selected.value)
         })
         .catch((error) => {
           console.log(error)
@@ -86,7 +89,13 @@ export default {
       let textAxios = await this.$axios.get('http://localhost:8000/texts')
         .then(async (response) => {
           this.texts = response.data
-          console.log(this.texts)
+          this.$q.loading.show({
+            message: `Translating ${this.messageCount++} / ${this.texts.length} , please wait...`,
+            spinnerSize: 150,
+            spinner: QSpinnerIos,
+            backgroundColor: 'blue-7',
+            spinnerColor: 'orange-7',
+          })
         })
         .then(async () => {
           this.texts.forEach((text) => {
@@ -95,21 +104,68 @@ export default {
                 languageTo: code,
                 text: text.translate
             }))
-            this.textsTranslated.push({
-              translate: '',
-              lang_code: code,
-              key_text_id: ''
-            })
           })
         })
         .then(()=> {
-          Promise.all(promiseArray).then((values) => {
-            values.forEach((value) => {
-              // TODO: Mapping the values to the textsTranslated array
+          Promise.all(promiseArray)
+            .then((values) => {
+            values.forEach((value, index) => {
+              this.textsTranslated.push({
+                translate: value.data,
+                lang_code: code,
+                key_text_id: index + 1
+              })
             })
-            console.log(this.textsTranslated)
           })
+            .then(() => {
+              this.textsTranslated.forEach((text) => {
+                this.$axios.post('http://localhost:8000/text', {
+                    lang_code: text.lang_code,
+                    key_text_id: text.key_text_id,
+                    translate: text.translate
+                  },
+                  {
+                    headers: {
+                      'Content-Type': 'application/json'
+                    }
+                  })
+                  .then(async (response) => {
+                    if (response.status === 200 && this.messageCount < this.texts.length) this.messageCount++
+                    this.$q.loading.show({
+                      message: `Translating ${this.messageCount} / ${this.texts.length} , please wait...`,
+                      spinnerSize: 150,
+                      spinner: QSpinnerIos,
+                      backgroundColor: 'blue-7',
+                      spinnerColor: 'orange-7',
+                    })
+                  })
+                  .then(() => {
+                    if (this.messageCount === this.texts.length) {
+                      this.$q.loading.hide()
+                      this.$q.notify({
+                        message: 'All texts translated',
+                        color: 'green-5',
+                        textColor: 'white',
+                        icon: 'check_circle',
+                        position: 'bottom'
+                      })
+                    }
+                  })
+                  .catch((error) => {
+                    console.log(error)
+                    this.$q.notify({
+                      message: error.response.data.message,
+                      color: 'red-4',
+                      textColor: 'white',
+                      icon: 'error',
+                      position: 'bottom'
+                    })
+                  })
+              })
+            })
+
         })
+
     }
   }
 }
