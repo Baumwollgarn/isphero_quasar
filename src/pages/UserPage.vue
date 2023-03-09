@@ -99,9 +99,6 @@ import autoTable from 'jspdf-autotable';
 
 export default {
   name: "UserPage",
-  components: {
-
-  },
   data() {
     return {
       alert: ref(false),
