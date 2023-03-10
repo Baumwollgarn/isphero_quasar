@@ -110,22 +110,10 @@ const linksList = [
     link: '#/home/services'
   },
   {
-    title: 'Properties',
-    caption: 'Overview & listing',
-    icon: 'view_list',
-    link: '#/home/properties'
-  },
-  {
     title: 'Languages',
     caption: 'Manage languages',
     icon: 'translate',
     link: '#/home/languages'
-  },
-  {
-    title: 'Settings',
-    caption: 'Change settings',
-    icon: 'settings',
-    link: '#/home/settings'
   }
 ]
 
