@@ -15,15 +15,6 @@
           ISP Hero - Admin Panel
         </q-toolbar-title>
 
-
-        <q-btn
-          flat
-          dense
-          round
-          icon="notifications"
-          aria-label="Notifications"/>
-          <!--@click="toggleRightDrawer" -->
-
         <q-btn-dropdown
           color="white"
           outline
@@ -120,12 +111,6 @@ const linksList = [
     caption: 'Manage languages',
     icon: 'translate',
     link: '#/home/languages'
-  },
-  {
-    title: 'Settings',
-    caption: 'Change settings',
-    icon: 'settings',
-    link: '#/home/settings'
   }
 ]
 
